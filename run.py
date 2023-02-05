@@ -1,5 +1,5 @@
 import gspread
-from google.oauth2.serivce_account import Credentials
+from google.oauth2.service_account import Credentials
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -10,5 +10,4 @@ SCOPE = [
 CREDS = Credentials.from_service_account_file("creds.json")
 SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
-SHEET = GSPREAD_CLIENT/open("sentiment-analysis-data-set")
-
+SHEET = GSPREAD_CLIENT.open("sentiment-analysis-data-set")
