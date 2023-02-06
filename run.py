@@ -1,6 +1,11 @@
 import gspread
 from google.oauth2.service_account import Credentials
 from tabulate import tabulate
+from collections import Counter
+import spacy
+nlp = spacy.load('en_core_web_sm')
+nlp.max_length = 185000
+
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -43,13 +48,23 @@ def fetch_headers():
 
     return header_choice
 
-def analyze_data(header_choice):
+def get_selected_data(selection):
+    """
+    Fetches the data from the specified column and concatenates it into a single string for analysis.
+    Prepares the string for sentiment analysis.
+    """
     worksheet = SHEET.worksheet('data')
-    data_to_analyze = worksheet.col_values(1)
+    data_to_analyse = worksheet.col_values(selection)
+    data_string = ' '.join(data_to_analyse)
+    
+    return data_string
 
-    print(data_to_analyze)
-
-
+def analyse_themes(string):
+    doc = nlp(data_string, disable = ['ner'])
+    print(doc)
+    
 
 header_choice = fetch_headers()
-analyze_data(header_choice)
+data_string = get_selected_data(header_choice)
+analyse_themes(data_string)
+
