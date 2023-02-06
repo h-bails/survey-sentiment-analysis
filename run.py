@@ -13,8 +13,6 @@ SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open("sentiment-analysis-data-set")
 
-
-
 print(f"Welcome to the Survey Sentiment Analyser!\n")
 print(f"This program can help you perform sentiment analysis on\nopen-text responses on a Google Sheet.")
 input(f"Press Enter to begin the data analysis.\n")
@@ -28,7 +26,7 @@ def fetch_headers():
     """
     data = SHEET.worksheet('data').get_all_values()
     header_title = data[0]
-    header_num = list(range(len(header_title)))
+    header_num = list(range(1, (len(header_title) +1)))
     header_dict = {}
     for title, num in zip(header_title, header_num):
         header_dict[title] = num
@@ -45,5 +43,13 @@ def fetch_headers():
 
     return header_choice
 
+def analyze_data(header_choice):
+    worksheet = SHEET.worksheet('data')
+    data_to_analyze = worksheet.col_values(1)
 
-fetch_headers()
+    print(data_to_analyze)
+
+
+
+header_choice = fetch_headers()
+analyze_data(header_choice)
