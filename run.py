@@ -61,7 +61,9 @@ def get_selected_data(selection):
 
 def analyse_themes(string):
     doc = nlp(data_string, disable = ['ner'])
-    print(doc)
+    words = [token.lemma_ for token in doc if not token.is_stop and not token.is_punct]
+    word_frequency = Counter(words).most_common(10)
+    print(word_frequency)    
     
 
 header_choice = fetch_headers()
