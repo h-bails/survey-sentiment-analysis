@@ -19,11 +19,11 @@ SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open("sentiment-analysis-data-set")
 
-print(f"Welcome to the Survey Sentiment Analyser!\n")
-print(f"This program can help you perform sentiment analysis on\nopen-text responses on a Google Sheet.")
-input(f"Press Enter to begin the data analysis.\n")
+print("Welcome to the Survey Sentiment Analyser!\n")
+print("This program can help you perform sentiment analysis on\nopen-text responses on a Google Sheet.")
+input("Press Enter to begin the data analysis.\n")
 
-print(f"Fetching available data categories...\n")
+print("Fetching available data categories...\n")
 
 
 def fetch_headers():
@@ -38,17 +38,22 @@ def fetch_headers():
     for title, num in zip(header_title, header_num):
         header_dict[title] = num
     print(tabulate(header_dict.items(), headers = ["Question", "Option"]))
-    print(f"\nTo begin analysing answers to a question,\nenter its allocated number followed by Enter.")
-    header_choice = input("Enter your data here: ")
-    
-    try:
-        if header_choice in header_dict.values():
-            print(f"You chose topic {header_choice}!")
-    except ValueError:
-        print(f"Invalid header choice provided: {header_choice}. Please select a number from the list above\nand press Enter.")
-        return False
+    print("\nTo begin analysing answers to a question,\nenter its allocated number followed by Enter.\n")
 
+    while True:
+        try:
+            header_choice = input("Enter your choice here: ")
+            if header_choice in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"]:
+                break
+            else:
+                raise ValueError("Number not in list")
+        except ValueError as e:
+            print(f"{e}: Invalid selection. Please try again.")
+            continue
+            
+    print("Great! Let's analyse your data!")          
     return header_choice
+
 
 def get_selected_data(selection):
     """
@@ -67,7 +72,7 @@ def analyse_themes(string):
     Ignores stop words and punctuation.
     Analyses the string for frequency of phrases.
     """
-    doc = nlp(data_string, disable = ['ner'])
+    doc = nlp(string, disable = ['ner'])
     words = [token.lemma_ for token in doc if not token.is_stop and not token.is_punct]
     word_freq = Counter(words).most_common(10)
     
@@ -76,20 +81,21 @@ def analyse_themes(string):
     matcher = Matcher(nlp.vocab) 
     pattern = [{'POS':'ADJ'}, {'POS':'NOUN'}] 
     matcher.add('ADJ_PHRASE', [pattern]) 
-    matches = matcher(phrase_doc, as_spans=True) 
+    phrase_matches = matcher(phrase_doc, as_spans=True) 
     phrases = [] 
-    for span in matches:
+    for span in phrase_matches:
         phrases.append(span.text.lower())
-    
     phrase_freq = Counter(phrases).most_common(10)
-    
-    print(f"\nMost common phrases:")
+
+    print("\nMost common phrases:")
     print(tabulate(phrase_freq))
 
-    print(f"\nMost common words:")
+    print("\nMost common words:")
     print(tabulate(word_freq))
 
-    
+    input("Do you want to export the full results as a Word Cloud?\nThis will be added to a new worksheet on your Google Sheet. (Y/N): ")
+
+
 
     
 
