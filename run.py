@@ -25,6 +25,7 @@ input(f"Press Enter to begin the data analysis.\n")
 
 print(f"Fetching available data categories...\n")
 
+
 def fetch_headers():
     """
     Displays the data available for analysis by arranging headers into a dict, 
@@ -32,12 +33,12 @@ def fetch_headers():
     """
     data = SHEET.worksheet('data').get_all_values()
     header_title = data[0]
-    header_num = list(range(1, (len(header_title) +1)))
+    header_num = list(range(1, (len(header_title)+1)))
     header_dict = {}
     for title, num in zip(header_title, header_num):
         header_dict[title] = num
-    print(tabulate(header_dict.items(), headers = ["Topic", "Number"]))
-    print(f"\nTo begin analysing a topic, enter the number of the topic followed by Enter.\n")
+    print(tabulate(header_dict.items(), headers = ["Question", "Option"]))
+    print(f"\nTo begin analysing answers to a question,\nenter its allocated number followed by Enter.")
     header_choice = input("Enter your data here: ")
     
     try:
@@ -68,22 +69,25 @@ def analyse_themes(string):
     """
     doc = nlp(data_string, disable = ['ner'])
     words = [token.lemma_ for token in doc if not token.is_stop and not token.is_punct]
-    word_frequency = Counter(words).most_common(10)
+    word_freq = Counter(words).most_common(10)
     
+    lemmatized_string = ' '.join(words)
+    phrase_doc = nlp(lemmatized_string, disable = ['ner'])
     matcher = Matcher(nlp.vocab) 
     pattern = [{'POS':'ADJ'}, {'POS':'NOUN'}] 
     matcher.add('ADJ_PHRASE', [pattern]) 
-    matches = matcher(doc, as_spans=True) 
+    matches = matcher(phrase_doc, as_spans=True) 
     phrases = [] 
     for span in matches:
         phrases.append(span.text.lower())
-        phrase_freq = Counter(phrases)
     
-    print("Most common phrases")
-    print(tabulate(phrase_freq.most_common(10)))
+    phrase_freq = Counter(phrases).most_common(10)
+    
+    print(f"\nMost common phrases:")
+    print(tabulate(phrase_freq))
 
-    print("Most common words:")
-    print(tabulate(word_frequency))
+    print(f"\nMost common words:")
+    print(tabulate(word_freq))
 
     
 
