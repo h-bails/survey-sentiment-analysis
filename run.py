@@ -3,6 +3,7 @@ from google.oauth2.service_account import Credentials
 from tabulate import tabulate
 from collections import Counter
 import spacy
+from spacy.matcher import Matcher
 nlp = spacy.load('en_core_web_sm')
 nlp.max_length = 185000
 
@@ -60,10 +61,32 @@ def get_selected_data(selection):
     return data_string
 
 def analyse_themes(string):
+    """
+    Tokenises the words in the string, assigning them lemma values.
+    Ignores stop words and punctuation.
+    Analyses the string for frequency of phrases.
+    """
     doc = nlp(data_string, disable = ['ner'])
     words = [token.lemma_ for token in doc if not token.is_stop and not token.is_punct]
     word_frequency = Counter(words).most_common(10)
-    print(word_frequency)    
+    
+    matcher = Matcher(nlp.vocab) 
+    pattern = [{'POS':'ADJ'}, {'POS':'NOUN'}] 
+    matcher.add('ADJ_PHRASE', [pattern]) 
+    matches = matcher(doc, as_spans=True) 
+    phrases = [] 
+    for span in matches:
+        phrases.append(span.text.lower())
+        phrase_freq = Counter(phrases)
+    
+    print("Most common phrases")
+    print(tabulate(phrase_freq.most_common(10)))
+
+    print("Most common words:")
+    print(tabulate(word_frequency))
+
+    
+
     
 
 header_choice = fetch_headers()
