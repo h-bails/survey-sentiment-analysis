@@ -4,6 +4,9 @@ from tabulate import tabulate
 from collections import Counter
 import spacy
 from spacy.matcher import Matcher
+import matplotlib.pyplot as plt
+from wordcloud import WordCloud
+
 nlp = spacy.load('en_core_web_sm')
 nlp.max_length = 185000
 
@@ -66,6 +69,7 @@ def get_selected_data(selection):
     
     return data_string
 
+
 def analyse_themes(string):
     """
     Tokenises the words in the string, assigning them lemma values.
@@ -93,13 +97,28 @@ def analyse_themes(string):
     print("\nMost common words:")
     print(tabulate(word_freq))
 
-    input("Do you want to export the full results as a Word Cloud?\nThis will be added to a new worksheet on your Google Sheet. (Y/N): ")
 
 
+def build_word_cloud(string):
+    doc = nlp(string, disable = ['ner'])
+    words = [token.lemma_ for token in doc if not token.is_stop and not token.is_punct]
 
-    
+    lemmatized_string = ' '.join(words)
+    phrase_doc = nlp(lemmatized_string, disable = ['ner'])
+    matcher = Matcher(nlp.vocab) 
+    pattern = [{'POS':'ADJ'}, {'POS':'NOUN'}] 
+    matcher.add('ADJ_PHRASE', [pattern]) 
+    phrase_matches = matcher(phrase_doc, as_spans=True) 
+    phrases = [] 
+    for span in phrase_matches:
+        phrases.append(span.text.lower())
+    phrases_string = ' '.join(phrases)
+    wordcloud = WordCloud().generate(phrases_string)
+    plt.imshow(wordcloud)
+    wordcloud.to_file("./test.png")
+ 
 
 header_choice = fetch_headers()
 data_string = get_selected_data(header_choice)
 analyse_themes(data_string)
-
+build_word_cloud(data_string)
