@@ -4,10 +4,12 @@ from tabulate import tabulate
 from collections import Counter
 import spacy
 from spacy.matcher import Matcher
+from spacytextblob.spacytextblob import SpacyTextBlob
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 
 nlp = spacy.load('en_core_web_sm')
+nlp.add_pipe('spacytextblob')
 nlp.max_length = 185000
 
 
@@ -96,6 +98,11 @@ def analyse_themes(string):
 
     print("\nMost common words:")
     print(tabulate(word_freq))
+
+    print("\nSentiment of responses:")
+    print(doc._.blob.polarity)
+    print(doc._.blob.sentiment_assessments.assessments)
+
 
 
 
