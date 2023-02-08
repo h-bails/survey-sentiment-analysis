@@ -7,6 +7,7 @@ from spacy.matcher import Matcher
 from spacytextblob.spacytextblob import SpacyTextBlob
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
+import os
 
 nlp = spacy.load('en_core_web_sm')
 nlp.add_pipe('spacytextblob')
@@ -123,6 +124,8 @@ def build_word_cloud(string):
     wordcloud = WordCloud().generate(phrases_string)
     plt.imshow(wordcloud)
     wordcloud.to_file("./test.png")
+    print("File now available to download in home directory.")
+    print(os.path.expanduser('~/test.png'))
  
 
 header_choice = fetch_headers()
