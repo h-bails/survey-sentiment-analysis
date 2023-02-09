@@ -7,7 +7,7 @@ from spacy.matcher import Matcher
 from spacytextblob.spacytextblob import SpacyTextBlob
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
-import os
+import pathlib
 
 nlp = spacy.load('en_core_web_sm')
 nlp.add_pipe('spacytextblob')
@@ -100,10 +100,16 @@ def analyse_themes(string):
     print("\nMost common words:")
     print(tabulate(word_freq))
 
-    print("\nSentiment of responses:")
-    print(doc._.blob.polarity)
-    print(doc._.blob.sentiment_assessments.assessments)
+    sentiment_score = doc._.blob.polarity
+    print("\nSentiment of responses:\n")
+    print(sentiment_score)
 
+    if round(sentiment_score) == -1:
+        print("\nSentiment of responses skewed towards *Negative*.")
+    elif round(sentiment_score) == 1:
+        print("\nSentiment of responses skewed towards *Positive*.")
+    elif round(sentiment_score) == 0:
+        print("\nSentiment of responses was largely *Neutral*.")
 
 
 
@@ -123,9 +129,10 @@ def build_word_cloud(string):
     phrases_string = ' '.join(phrases)
     wordcloud = WordCloud().generate(phrases_string)
     plt.imshow(wordcloud)
-    wordcloud.to_file("./test.png")
-    print("File now available to download in home directory.")
-    print(os.path.expanduser('~/test.png'))
+    wordcloud.to_file("./wordcloud.png")
+    print("Your WordCloud is now available.")
+    print("Please refresh the page to view it. (You can Right click > Save as... on the image to download.).")
+
  
 
 header_choice = fetch_headers()
