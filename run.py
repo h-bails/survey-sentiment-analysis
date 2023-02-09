@@ -101,8 +101,8 @@ def analyse_themes(string):
     print(tabulate(word_freq))
 
     sentiment_score = doc._.blob.polarity
-    print("\nSentiment of responses:\n")
-    print(sentiment_score)
+    print("\nSentiment score of responses:\n")
+    print(round(sentiment_score, 3))
 
     if round(sentiment_score) == -1:
         print("\nSentiment of responses skewed towards *Negative*.")
@@ -130,8 +130,13 @@ def build_word_cloud(string):
     wordcloud = WordCloud().generate(phrases_string)
     plt.imshow(wordcloud)
     wordcloud.to_file("./wordcloud.png")
-    print("Your WordCloud is now available.")
-    print("Please refresh the page to view it. (You can Right click > Save as... on the image to download.).")
+    print("\nYour WordCloud is now available.\n")
+    print("Please refresh the page to view and download it.\n")
+    file_name = "wordcloud.png"
+    base_url = pathlib.Path(__file__).resolve().parent.parent
+    file_path = base_url / 'media' / file_name
+    wordcloud_sheet = SHEET.worksheet('WordCloud')
+    wordcloud_sheet.update_cell(1, 1, f'=IMAGE("{file_path}")')
 
  
 

@@ -1,7 +1,7 @@
 <body>
     <button onclick="window.location.reload()">Run Program</button>
     <div id="terminal"></div>
-
+    <h1>Welcome to the Survey Sentiment Analyser!</h1>
     <script>
         var term = new Terminal({
             cols: 80,
@@ -25,6 +25,7 @@
         document.getElementsByClassName("xterm-helper-textarea")[0].focus();
     </script>
     <br>
-    <h1 id = "wordcloud-zone">WordCloud Zone</h1>
+    <h2 id = "wordcloud-zone">WordCloud Zone</h2>
+    <p>Download your WordCloud here using <b>Right Click > Save Image As...</b></p>
     <div id = "wordcloud"><img src="../wordcloud.png"></div>
 </body>
