@@ -25,17 +25,11 @@ SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open("sentiment-analysis-data-set")
 
-print("Welcome to the Survey Sentiment Analyser!\n")
-print("This program can help you perform sentiment analysis on\nopen-text responses on a Google Sheet.")
-input("Press Enter to begin the data analysis.\n")
-
-print("Fetching available data categories...\n")
-
 
 def fetch_headers():
     """
     Displays the data available for analysis by arranging headers into a dict, 
-    then tabulating the dict using tabulate
+    then tabulating the dict using the tabulate module.
     """
     data = SHEET.worksheet('data').get_all_values()
     header_title = data[0]
@@ -49,7 +43,7 @@ def fetch_headers():
     while True:
         try:
             header_choice = input("Enter your choice here: ")
-            if header_choice in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"]:
+            if header_choice in ["1", "2", "3", "4", "5"]:
                 break
             else:
                 raise ValueError("Number not in list")
@@ -57,7 +51,7 @@ def fetch_headers():
             print(f"{e}: Invalid selection. Please try again.")
             continue
             
-    print("Great! Let's analyse your data!")          
+    print("Great! Let's analyse your data!/n")          
     return header_choice
 
 
@@ -75,9 +69,10 @@ def get_selected_data(selection):
 
 def analyse_themes(string):
     """
-    Tokenises the words in the string, assigning them lemma values.
+    Tokenises and lemmatizes the words in the string, assigning them lemma values.
     Ignores stop words and punctuation.
-    Analyses the string for frequency of phrases.
+    Analyses the string for frequency of words and phrases.
+    Assigns a sentiment score to the answers to the question.
     """
     doc = nlp(string, disable = ['ner'])
     words = [token.lemma_ for token in doc if not token.is_stop and not token.is_punct]
@@ -105,33 +100,41 @@ def analyse_themes(string):
     print(round(sentiment_score, 3))
 
     if round(sentiment_score) == -1:
-        print("\nSentiment of responses skewed towards *Negative*.")
+        print("\nSentiment of responses skewed towards *Negative*.\n")
     elif round(sentiment_score) == 1:
-        print("\nSentiment of responses skewed towards *Positive*.")
+        print("\nSentiment of responses skewed towards *Positive*.\n")
     elif round(sentiment_score) == 0:
-        print("\nSentiment of responses was largely *Neutral*.")
-
+        print("\nSentiment of responses was largely *Neutral*.\n")
+    
+    print("What do you want to do next?/n")
+    
+    while True:
+        try:
+            word_cloud_choice = input("Enter 1 to build a word cloud of this data. Enter 2 to analyze more data.")
+            if word_cloud_choice == 1:
+                print("OK! Now building your Word Cloud.../n")
+                build_word_cloud(doc)
+                break
+            elif word_cloud_choice == 2:
+                print("OK! Taking you back to the home screen.../n")
+                main()
+                break
+            else:
+                raise ValueError("Invalid selection")
+        except ValueError as e:
+            print(f"{e}: Available options are 1 or 2. Please try again.")
+            continue
 
 
 def build_word_cloud(string):
-    doc = nlp(string, disable = ['ner'])
-    words = [token.lemma_ for token in doc if not token.is_stop and not token.is_punct]
-
-    lemmatized_string = ' '.join(words)
-    phrase_doc = nlp(lemmatized_string, disable = ['ner'])
-    matcher = Matcher(nlp.vocab) 
-    pattern = [{'POS':'ADJ'}, {'POS':'NOUN'}] 
-    matcher.add('ADJ_PHRASE', [pattern]) 
-    phrase_matches = matcher(phrase_doc, as_spans=True) 
-    phrases = [] 
-    for span in phrase_matches:
-        phrases.append(span.text.lower())
-    phrases_string = ' '.join(phrases)
+    phrases_string = ' '.join(string)
     wordcloud = WordCloud().generate(phrases_string)
     plt.imshow(wordcloud)
     wordcloud.to_file("./wordcloud.png")
+
     print("\nYour WordCloud is now available.\n")
     print("Please refresh the page to view and download it.\n")
+
     file_name = "wordcloud.png"
     base_url = pathlib.Path(__file__).resolve().parent.parent
     file_path = base_url / 'media' / file_name
@@ -139,8 +142,15 @@ def build_word_cloud(string):
     wordcloud_sheet.update_cell(1, 1, f'=IMAGE("{file_path}")')
 
  
+def main():
+    header_choice = fetch_headers()
+    data_string = get_selected_data(header_choice)
+    analyse_themes(data_string)
 
-header_choice = fetch_headers()
-data_string = get_selected_data(header_choice)
-analyse_themes(data_string)
-build_word_cloud(data_string)
+
+print("Welcome to the Survey Sentiment Analyser!\n")
+print("This program can help you perform sentiment analysis on\nopen-text responses on a Google Sheet.")
+input("Press Enter to begin the data analysis.\n")
+
+print("Fetching available data categories...\n")
+main()
