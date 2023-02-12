@@ -1,5 +1,6 @@
 from collections import Counter
 import pathlib
+import sys
 import gspread
 from google.oauth2.service_account import Credentials
 from tabulate import tabulate
@@ -46,6 +47,8 @@ def fetch_headers():
             header_choice = input("Enter your choice here: ")
             if header_choice in ["1", "2", "3", "4", "5"]:
                 break
+            elif header_choice == "exit":
+                sys.exit(0)
             else:
                 raise ValueError("Invalid selection")
         except ValueError as error:
@@ -115,15 +118,17 @@ def analyse_themes(string):
     while True:
         try:
             word_cloud_choice = input("Enter 1 to build a word cloud of this\
-                data, or 2 to analyze more data. ")
-            if int(word_cloud_choice) == 1:
+                \ndata, or 2 to analyze more data: ")
+            if word_cloud_choice == "1":
                 print("OK! Building your Word Cloud...\n")
                 build_word_cloud(phrases)
                 break
-            elif int(word_cloud_choice) == 2:
+            elif word_cloud_choice == "2":
                 print("OK! Taking you back to the home screen...\n")
                 main()
                 break
+            elif word_cloud_choice == "exit":
+                sys.exit(0)
             else:
                 raise ValueError("Invalid selection")
         except ValueError as error:
