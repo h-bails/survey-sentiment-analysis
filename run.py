@@ -105,9 +105,10 @@ def analyse_themes(string):
     print("\nMost common words:")
     print(tabulate(word_freq))
 
-    sentiment_score = doc._.blob.polarity
+    sentiment_polarity = doc._.blob.polarity
+    sentiment_score = round(sentiment_polarity, 3)
     print("\nSentiment score of responses:\n")
-    print(round(sentiment_score, 3))
+    print(sentiment_score)
 
     if round(sentiment_score) == -1:
         print("\nSentiment of responses skewed towards *Negative*.\n")
@@ -154,11 +155,44 @@ def append_data(words, phrases, sentiment):
     random_num = random.choice(range(1000, 9999))
     worksheet_title = '_'.join(["worksheet", str(random_num)])
     worksheet = SHEET.add_worksheet(title=worksheet_title, rows=100, cols=20)
-    worksheet.append_rows(words)
-    worksheet.append_rows(phrases)
-    worksheet.append_rows(sentiment)
+    
+    words_list = [list(row) for row in words]
+    phrases_list = [list(row) for row in phrases]
+    
+    worksheet.append_row(["Most common words:"], table_range='A1:B1')
+    worksheet.append_rows(words_list, table_range='A1:B1')
+
+    worksheet.append_row(["Most common phrases:"], table_range='A13:B13')
+    worksheet.append_rows(phrases_list)
+
+    worksheet.append_row(["Overall sentiment score:"], table_range='A25:B25')
+    worksheet.append_row([sentiment], table_range='A26:B26')
     print('\nWorksheet updated.\n')
 
+    print("What do you want to do next?\n")
+
+    while True:
+        try:
+            next step_choice = input("1: Build a Word Cloud using this data\
+                \n2: Analyze another data category\n\
+                \nexit: Exit the program\
+                \nYour choice: ")
+            if step_choice == "1":
+                print("OK! Building your Word Cloud...\n")
+                build_word_cloud(phrases)
+                break
+            elif word_cloud_choice == "2":
+                print("OK! Taking you back to the home screen...\n")
+                main()
+                break
+            elif word_cloud_choice == "exit":
+                sys.exit(0)
+            else:
+                raise ValueError("Invalid selection")
+        except ValueError as error:
+            print(f"{error}: Available options are 1, 2, or \'exit\'. Please try again.")
+            continue
+    
 
 def build_word_cloud(string):
     """
