@@ -1,5 +1,6 @@
 from collections import Counter
 import pathlib
+import random
 import sys
 import gspread
 from google.oauth2.service_account import Credentials
@@ -40,13 +41,15 @@ def fetch_headers():
         header_dict[title] = num
     print(tabulate(header_dict.items(), headers=["Question", "Option"]))
     print("\nTo begin analysing survey data,")
-    print("enter its allocated number followed by Enter.\n")
+    print("enter its allocated number followed by \'Enter\'.\n")
 
     while True:
         try:
             header_choice = input("Enter your choice here: ")
-            if header_choice in ["1", "2", "3", "4", "5"]:
+            if int(header_choice) in header_num:
                 break
+            elif header_choice == "0":
+                raise ValueError("Invalid selection")
             elif header_choice == "exit":
                 sys.exit(0)
             else:
@@ -117,13 +120,18 @@ def analyse_themes(string):
 
     while True:
         try:
-            word_cloud_choice = input("Enter 1 to build a word cloud of this\
-                \ndata, or 2 to analyze more data: ")
+            word_cloud_choice = input("1: Add this data to my Google Sheet\
+                \n2: Build a Word Cloud using this data\
+                \n3: Analyze another data category\n\
+                \nYour choice: ")
             if word_cloud_choice == "1":
+                append_data(word_freq, phrase_freq, sentiment_score)
+                break
+            elif word_cloud_choice == "2":
                 print("OK! Building your Word Cloud...\n")
                 build_word_cloud(phrases)
                 break
-            elif word_cloud_choice == "2":
+            elif word_cloud_choice == "3":
                 print("OK! Taking you back to the home screen...\n")
                 main()
                 break
@@ -134,6 +142,22 @@ def analyse_themes(string):
         except ValueError as error:
             print(f"{error}: Available options are 1 or 2. Please try again.")
             continue
+
+
+def append_data(words, phrases, sentiment):
+    """
+    Creates a new worksheet with a random name.
+    Appends most common words, phrases and sentiment score
+    to the new worksheet.
+    """
+    print('\nUpdating worksheet...\n')
+    random_num = random.choice(range(1000, 9999))
+    worksheet_title = '_'.join(["worksheet", str(random_num)])
+    worksheet = SHEET.add_worksheet(title=worksheet_title, rows=100, cols=20)
+    worksheet.append_rows(words)
+    worksheet.append_rows(phrases)
+    worksheet.append_rows(sentiment)
+    print('\nWorksheet updated.\n')
 
 
 def build_word_cloud(string):
@@ -168,7 +192,9 @@ def main():
 print("Welcome to the Survey Sentiment Analyser!\n")
 print("This program can help you perform sentiment analysis on")
 print("open-text survey responses in a Google Sheet.\n")
-input("Press Enter to begin the data analysis.\n")
+print("Type \'exit\' at any time to terminate the program.\n")
+
+input("Press \'Enter\' to begin the data analysis.\n")
 
 print("Fetching available data categories...\n")
 main()
