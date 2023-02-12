@@ -106,16 +106,20 @@ def analyse_themes(string):
     print(tabulate(word_freq))
 
     sentiment_polarity = doc._.blob.polarity
-    sentiment_score = round(sentiment_polarity, 3)
+    sentiment_score = round(sentiment_polarity, 1)
     print("\nSentiment score of responses:\n")
     print(sentiment_score)
 
-    if round(sentiment_score) == -1:
-        print("\nSentiment of responses skewed towards *Negative*.\n")
-    elif round(sentiment_score) == 1:
-        print("\nSentiment of responses skewed towards *Positive*.\n")
-    elif round(sentiment_score) == 0:
-        print("\nSentiment of responses was largely *Neutral*.\n")
+    if sentiment_score <= 1 and sentiment_score >= 0.6:
+        print("\nSentiment of responses was *Very Positive*.\n")
+    elif sentiment_score < 0.6 and sentiment_score > 0.1:
+        print("\nSentiment of responses was *Positive*.\n")   
+    elif sentiment_score <= 0.1 and sentiment_score >= -0.1:
+        print("\nSentiment of responses was *Neutral*.\n")
+    elif sentiment_score > -0.6 and sentiment_score < -0.1:
+        print("\nSentiment of responses was *Negative*.\n")                
+    elif sentiment_score >= -1 and sentiment_score <= 0.6:
+        print("\nSentiment of responses was *Very Negative*.\n")
 
     print("What do you want to do next?\n")
 
@@ -173,7 +177,7 @@ def append_data(words, phrases, sentiment):
 
     while True:
         try:
-            next step_choice = input("1: Build a Word Cloud using this data\
+            step_choice = input("1: Build a Word Cloud using this data\
                 \n2: Analyze another data category\n\
                 \nexit: Exit the program\
                 \nYour choice: ")
@@ -181,16 +185,17 @@ def append_data(words, phrases, sentiment):
                 print("OK! Building your Word Cloud...\n")
                 build_word_cloud(phrases)
                 break
-            elif word_cloud_choice == "2":
+            elif step_choice == "2":
                 print("OK! Taking you back to the home screen...\n")
                 main()
                 break
-            elif word_cloud_choice == "exit":
+            elif step_choice == "exit":
                 sys.exit(0)
             else:
                 raise ValueError("Invalid selection")
         except ValueError as error:
-            print(f"{error}: Available options are 1, 2, or \'exit\'. Please try again.")
+            print(f"{error}: Available options are 1, 2, or \'exit\'.\
+                \nPlease try again.")
             continue
     
 
