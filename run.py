@@ -145,7 +145,8 @@ def analyse_themes(string):
             else:
                 raise ValueError("Invalid selection")
         except ValueError as error:
-            print(f"{error}: Available options are 1 or 2. Please try again.")
+            print(f"{error}: Available options are 1 or 2, 3, or \'exit\'.\
+                \nPlease try again.")
             continue
 
 
@@ -217,6 +218,24 @@ def build_word_cloud(string):
     file_path = base_url / 'media' / file_name
     wordcloud_sheet = SHEET.worksheet('WordCloud')
     wordcloud_sheet.update_cell(1, 1, f'=IMAGE("{file_path}")')
+
+    while True:
+        try:
+            step_choice = input("1: Analyze another data category\n\
+                \nexit: Exit the program\
+                \nYour choice: ")
+            if step_choice == "1":
+                print("OK! Taking you back to the home screen...\n")
+                main()
+                break
+            elif step_choice == "exit":
+                sys.exit(0)
+            else:
+                raise ValueError("Invalid selection")
+        except ValueError as error:
+            print(f"{error}: Available options are 1, or \'exit\'.\
+                \nPlease try again.")
+            continue
 
 
 def main():
