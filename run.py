@@ -1,20 +1,26 @@
+"""
+Survey Sentiment Analyzer imports
+"""
+# import in-built Python modules
 from collections import Counter
 import pathlib
 import random
 import sys
+# import Google credentials and Sheets api
 import gspread
 from google.oauth2.service_account import Credentials
+# import visual presentation aids
 from tabulate import tabulate
+# import spacy for sentiment analysis
 import spacy
 from spacy.matcher import Matcher
 from spacytextblob.spacytextblob import SpacyTextBlob
+# import matplotlib and wordcloud to build word clouds
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 
 nlp = spacy.load('en_core_web_sm')
 nlp.add_pipe('spacytextblob')
-nlp.max_length = 185000
-
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -22,6 +28,7 @@ SCOPE = [
     "https://www.googleapis.com/auth/drive"
 ]
 
+# global variables
 CREDS = Credentials.from_service_account_file("creds.json")
 SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
@@ -30,8 +37,10 @@ SHEET = GSPREAD_CLIENT.open("sentiment-analysis-data-set")
 
 def fetch_headers():
     """
-    Displays the data available for analysis by arranging headers into a dict,
-    then tabulating the dict using the tabulate module.
+    Displays the data available for analysis by arranging sheet 
+    headers into a dict, then tabulating the dict.
+    Prompts the user to choose which data category they want to analyse.
+    Validates the user's input.
     """
     data = SHEET.worksheet('data').get_all_values()
     header_title = data[0]
@@ -64,9 +73,10 @@ def fetch_headers():
 
 def get_selected_data(selection):
     """
-    Fetches the data from the specified column and
-    concatenates it into a single string for analysis.
-    Prepares the string for sentiment analysis.
+    Fetches the data from the specified column.
+    Prepares the data for analysis by concatenating
+    it into a single string.
+    Returns the concatenated data string.
     """
     worksheet = SHEET.worksheet('data')
     data_to_analyse = worksheet.col_values(selection)
@@ -77,11 +87,12 @@ def get_selected_data(selection):
 
 def analyse_themes(string):
     """
-    Tokenises and lemmatizes the words in the string,
-    assigning them lemma values.
+    Tokenises and lemmatizes the words in the string (i.e. assigns each
+    word the relevant part of speech & reduces them to their base forms).
     Ignores stop words and punctuation.
     Analyses the string for frequency of words and phrases.
     Assigns a sentiment score to the answers to the question.
+    Gives the user the option of what to do next, and validates their input.
     """
     doc = nlp(string, disable=['ner'])
     words = [token.lemma_ for token in doc if not
@@ -153,8 +164,9 @@ def analyse_themes(string):
 def append_data(words, phrases, sentiment):
     """
     Creates a new worksheet with a random name.
-    Appends most common words, phrases and sentiment score
+    Appends the most common words, phrases and sentiment score
     to the new worksheet.
+    Gives the user the option of what to do next, and validates their input.
     """
     print('\nUpdating worksheet...\n')
     random_num = random.choice(range(1000, 9999))
@@ -202,8 +214,9 @@ def append_data(words, phrases, sentiment):
 
 def build_word_cloud(string):
     """
-    Builds a word cloud out of most common phrases in
-    selected data category
+    Builds a word cloud out of the most common phrases in the
+    selected data category.
+    Gives the user the option of what to do next, and validates their input.
     """
     phrases_string = ' '.join(string)
     wordcloud = WordCloud().generate(phrases_string)
