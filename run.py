@@ -14,7 +14,7 @@ from tabulate import tabulate
 # import spacy for sentiment analysis
 import spacy
 from spacy.matcher import Matcher
-from spacytextblob.spacytextblob import SpacyTextBlob
+from spacytextblob.spacytextblob import SpacyTextBlob  # noqa # pylint: disable=unused-import
 # import matplotlib and wordcloud to build word clouds
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
@@ -37,7 +37,7 @@ SHEET = GSPREAD_CLIENT.open("sentiment-analysis-data-set")
 
 def fetch_headers():
     """
-    Displays the data available for analysis by arranging sheet 
+    Displays the data available for analysis by arranging sheet
     headers into a dict, then tabulating the dict.
     Prompts the user to choose which data category they want to analyse.
     Validates the user's input.
@@ -124,11 +124,11 @@ def analyse_themes(string):
     if sentiment_score <= 1 and sentiment_score >= 0.6:
         print("\nSentiment of responses was *Very Positive*.\n")
     elif sentiment_score < 0.6 and sentiment_score > 0.1:
-        print("\nSentiment of responses was *Positive*.\n")   
+        print("\nSentiment of responses was *Positive*.\n")
     elif sentiment_score <= 0.1 and sentiment_score >= -0.1:
         print("\nSentiment of responses was *Neutral*.\n")
     elif sentiment_score > -0.6 and sentiment_score < -0.1:
-        print("\nSentiment of responses was *Negative*.\n")                
+        print("\nSentiment of responses was *Negative*.\n")
     elif sentiment_score >= -1 and sentiment_score <= 0.6:
         print("\nSentiment of responses was *Very Negative*.\n")
 
@@ -172,10 +172,10 @@ def append_data(words, phrases, sentiment):
     random_num = random.choice(range(1000, 9999))
     worksheet_title = '_'.join(["worksheet", str(random_num)])
     worksheet = SHEET.add_worksheet(title=worksheet_title, rows=100, cols=20)
-    
+
     words_list = [list(row) for row in words]
     phrases_list = [list(row) for row in phrases]
-    
+
     worksheet.append_row(["Most common words:"], table_range='A1:B1')
     worksheet.append_rows(words_list, table_range='A1:B1')
 
@@ -210,7 +210,7 @@ def append_data(words, phrases, sentiment):
             print(f"{error}: Available options are 1, 2, or \'exit\'.\
                 \nPlease try again.")
             continue
-    
+
 
 def build_word_cloud(string):
     """
