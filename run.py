@@ -232,9 +232,11 @@ def build_word_cloud(string):
     wordcloud_sheet = SHEET.worksheet('WordCloud')
     wordcloud_sheet.update_cell(1, 1, f'=IMAGE("{file_path}")')
 
+    print("What do you want to do next?\n")
+
     while True:
         try:
-            step_choice = input("1: Analyze another data category\n\
+            step_choice = input("1: Analyze another data category\
                 \nexit: Exit the program\
                 \nYour choice:\n")
             if step_choice == "1":
