@@ -54,7 +54,7 @@ def fetch_headers():
 
     while True:
         try:
-            header_choice = input("Enter your choice here: ")
+            header_choice = input("Enter your choice here:\n")
             if int(header_choice) in header_num:
                 break
             elif header_choice == "0":
@@ -139,7 +139,7 @@ def analyse_themes(string):
             word_cloud_choice = input("1: Add this data to my Google Sheet\
                 \n2: Build a Word Cloud using this data\
                 \n3: Analyze another data category\n\
-                \nYour choice: ")
+                \nYour choice:\n")
             if word_cloud_choice == "1":
                 append_data(word_freq, phrase_freq, sentiment_score)
                 break
@@ -193,7 +193,7 @@ def append_data(words, phrases, sentiment):
             step_choice = input("1: Build a Word Cloud using this data\
                 \n2: Analyze another data category\n\
                 \nexit: Exit the program\
-                \nYour choice: ")
+                \nYour choice:\n")
             if step_choice == "1":
                 print("OK! Building your Word Cloud...\n")
                 build_word_cloud(phrases)
@@ -236,7 +236,7 @@ def build_word_cloud(string):
         try:
             step_choice = input("1: Analyze another data category\n\
                 \nexit: Exit the program\
-                \nYour choice: ")
+                \nYour choice:\n")
             if step_choice == "1":
                 print("OK! Taking you back to the home screen...\n")
                 main()
