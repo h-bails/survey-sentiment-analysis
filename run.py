@@ -11,6 +11,7 @@ import gspread
 from google.oauth2.service_account import Credentials
 # import visual presentation aids
 from tabulate import tabulate
+from PIL import Image
 # import spacy for sentiment analysis
 import spacy
 from spacy.matcher import Matcher
@@ -45,6 +46,7 @@ def fetch_headers():
     data = SHEET.worksheet('data').get_all_values()
     header_title = data[0]
     header_num = list(range(1, (len(header_title)+1)))
+    header_num_string = [str(num) for num in header_num]
     header_dict = {}
     for title, num in zip(header_title, header_num):
         header_dict[title] = num
@@ -55,7 +57,7 @@ def fetch_headers():
     while True:
         try:
             header_choice = input("Enter your choice here:\n")
-            if int(header_choice) in header_num:
+            if header_choice in header_num_string:
                 break
             elif header_choice == "0":
                 raise ValueError("Invalid selection")
@@ -216,21 +218,18 @@ def build_word_cloud(string):
     """
     Builds a word cloud out of the most common phrases in the
     selected data category.
+    Saves wordcloud to the assets folder with a random name.
     Gives the user the option of what to do next, and validates their input.
     """
     phrases_string = ' '.join(string)
     wordcloud = WordCloud().generate(phrases_string)
     plt.imshow(wordcloud)
-    wordcloud.to_file("./wordcloud.png")
+    random_num = random.choice(range(1000, 9999))
+    wordcloud_name = '_'.join(["wordcloud", str(random_num)])
+    wordcloud.to_file(f"assets/{wordcloud_name}.png")
 
     print("\nYour WordCloud is now available.\n")
     print("Please refresh the page to view and download it.\n")
-
-    file_name = "wordcloud.png"
-    base_url = pathlib.Path(__file__).resolve().parent.parent
-    file_path = base_url / 'media' / file_name
-    wordcloud_sheet = SHEET.worksheet('WordCloud')
-    wordcloud_sheet.update_cell(1, 1, f'=IMAGE("{file_path}")')
 
     print("What do you want to do next?\n")
 
