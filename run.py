@@ -237,7 +237,7 @@ def build_word_cloud(string):
     while True:
         try:
             step_choice = input("1: Analyze another data category\
-                \nexit: Exit the program\
+                \nexit: Exit the program\n\
                 \nYour choice:\n")
             if step_choice == "1":
                 print("OK! Taking you back to the home screen...\n")
@@ -257,17 +257,25 @@ def main():
     """
     Run all program functions
     """
+    start()
     header_choice = fetch_headers()
     data_string = get_selected_data(header_choice)
     analyse_themes(data_string)
 
 
-print("Welcome to the Survey Sentiment Analyser!\n")
-print("This program can help you perform sentiment analysis on")
-print("open-text survey responses in a Google Sheet.\n")
-print("Type \'exit\' at any time to terminate the program.\n")
+def start():
+    """
+    Prints the introduction to the program
+    """
+    print("Welcome to the Survey Sentiment Analyser!\n")
+    print("This program can help you perform sentiment analysis on")
+    print("open-text survey responses in a Google Sheet.\n")
+    print("Type \'exit\' at any time to terminate the program.\n")
 
-input("Press \'Enter\' to begin the data analysis.\n")
+    input("Press \'Enter\' to begin the data analysis.\n")
 
-print("Fetching available data categories...\n")
-main()
+    print("Fetching available data categories...\n")
+
+
+if __name__ == "__main__":
+    main()
