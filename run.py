@@ -3,7 +3,6 @@ Survey Sentiment Analyzer imports
 """
 # import in-built Python modules
 from collections import Counter
-import pathlib
 import random
 import sys
 # import Google credentials and Sheets api
@@ -11,7 +10,6 @@ import gspread
 from google.oauth2.service_account import Credentials
 # import visual presentation aids
 from tabulate import tabulate
-from PIL import Image
 # import spacy for sentiment analysis
 import spacy
 from spacy.matcher import Matcher
