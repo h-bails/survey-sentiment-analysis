@@ -5,7 +5,8 @@ Survey Sentiment Analyzer imports
 from collections import Counter
 import random
 import sys
-# import Google credentials and Sheets api
+import os
+# import Google credentials, and Drive + Sheets api
 import gspread
 from google.oauth2.service_account import Credentials
 # import visual presentation aids
@@ -17,9 +18,12 @@ from spacytextblob.spacytextblob import SpacyTextBlob  # noqa # pylint: disable=
 # import matplotlib and wordcloud to build word clouds
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
+# import cloudinary for image uploading
+import cloudinary
+from cloudinary.uploader import upload
+from cloudinary.utils import cloudinary_url
+from decouple import config
 
-nlp = spacy.load('en_core_web_sm')
-nlp.add_pipe('spacytextblob')
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -32,7 +36,19 @@ CREDS = Credentials.from_service_account_file("creds.json")
 SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open("sentiment-analysis-data-set")
+CLOUDINARY_NAME = config('CLOUDINARY_URL')
+CLOUDINARY_KEY = config('CLOUDINARY_KEY')
+CLOUDINARY_SECRET = config('CLOUDINARY_SECRET')
+CLOUDINARY_URL = config('CLOUDINARY_URL')
+nlp = spacy.load('en_core_web_sm')
+nlp.add_pipe('spacytextblob')
 
+cloudinary.config(
+  cloud_name = CLOUDINARY_NAME,
+  api_key = CLOUDINARY_KEY,
+  api_secret = CLOUDINARY_SECRET,
+  secure = 'true'
+)
 
 def fetch_headers():
     """
@@ -224,10 +240,12 @@ def build_word_cloud(string):
     plt.imshow(wordcloud)
     random_num = random.choice(range(1000, 9999))
     wordcloud_name = '_'.join(["wordcloud", str(random_num)])
-    wordcloud.to_file(f"assets/{wordcloud_name}.png")
+    wordcloud_path = f"assets/{wordcloud_name}.png"
+    wordcloud.to_file(wordcloud_path)
+    upload(wordcloud_path)
+    url = cloudinary_url(f"wordcloud-{random_num}")
 
-    print("\nYour WordCloud is now available.\n")
-    print("Please refresh the page to view and download it.\n")
+    print(f"\nYour WordCloud is now available at {url}.\n")
 
     print("What do you want to do next?\n")
 
