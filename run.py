@@ -5,12 +5,9 @@ Survey Sentiment Analyzer imports
 from collections import Counter
 import random
 import sys
-import os
 # import Google credentials, and Drive + Sheets api
 import gspread
 from google.oauth2.service_account import Credentials
-from pydrive.auth import GoogleAuth
-from pydrive.drive import GoogleDrive
 # import visual presentation aids
 from tabulate import tabulate
 # import spacy for sentiment analysis
@@ -33,8 +30,6 @@ CREDS = Credentials.from_service_account_file("creds.json")
 SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open("sentiment-analysis-data-set")
-gauth = GoogleAuth()
-drive = GoogleDrive(gauth)
 nlp = spacy.load('en_core_web_sm')
 nlp.add_pipe('spacytextblob')
 
@@ -59,6 +54,7 @@ def fetch_headers():
 
     while True:
         try:
+            global header_choice
             header_choice = input("Enter your choice here:\n")
             if header_choice in header_num_string:
                 break
@@ -195,12 +191,12 @@ def append_data(words, phrases, sentiment):
 
     while True:
         try:
-            step_choice = input("1: Build a Word Cloud using this data\
+            step_choice = input("1: Download a Word Cloud from this data\
                 \n2: Analyze another data category\n\
                 \nexit: Exit the program\
                 \nYour choice:\n")
             if step_choice == "1":
-                print("OK! Building your Word Cloud...\n")
+                print("OK! Fetching your Word Cloud...\n")
                 build_word_cloud(phrases)
                 break
             elif step_choice == "2":
@@ -221,23 +217,34 @@ def build_word_cloud(string):
     """
     Builds a word cloud out of the most common phrases in the
     selected data category.
-    Saves wordcloud to the assets folder with a random name.
+    Saves wordcloud to the /static/ folder with a random name.
+    Also displays a static image of the wordcloud due to Heroku constraints.
     Gives the user the option of what to do next, and validates their input.
     """
     phrases_string = ' '.join(string)
-    wordcloud = WordCloud().generate(phrases_string)
+    wordcloud = WordCloud(background_color="white",
+                          width=800, height=400).generate(phrases_string)
     plt.imshow(wordcloud)
     random_num = random.choice(range(1000, 9999))
     wordcloud_name = '_'.join(["wordcloud", str(random_num)])
-    wordcloud_path = f"assets/{wordcloud_name}.png"
+    wordcloud_path = f"static/{wordcloud_name}.png"
     wordcloud.to_file(wordcloud_path)
-    gfile = drive.CreateFile({'parents': [{'id':
-                             '1-cQa-pHMMvONbx9cra2l2aeWXntlce5N'}]})
-    gfile.SetContentFile(wordcloud_path)
-    gfile.Upload()
 
+    short_path = 'https://res.cloudinary.com/hwvf6ormz/image/upload/'
 
-    print(f"\nYour WordCloud is now available in your Google Drive.\n")
+    if header_choice == "1":
+        wordcloud_url = short_path + "v1676571064/wordcloud_7289_y9dtvm.png"
+    elif header_choice == "2":
+        wordcloud_url = short_path + "v1676571249/wordcloud_7156_hukmw2.png"
+    elif header_choice == "3":
+        wordcloud_url = short_path + "v1676571304/wordcloud_4527_pux62s.png"
+    elif header_choice == "4":
+        wordcloud_url = short_path + "v1676571438/wordcloud_4473_f9nfuw.png"
+    elif header_choice == "5":
+        wordcloud_url = short_path + "v1676571487/wordcloud_6742_b0jpg4.png"
+
+    print("\nWordcloud saved to the home directory.\n")
+    print(f"\nYou can also view it here: {wordcloud_url}\n")
 
     print("What do you want to do next?\n")
 
