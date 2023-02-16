@@ -10,4 +10,4 @@ creds.json
 client_secrets.json
 settings.yaml
 credentials.json
-.env
+client_secrets.json

@@ -9,6 +9,8 @@ import os
 # import Google credentials, and Drive + Sheets api
 import gspread
 from google.oauth2.service_account import Credentials
+from pydrive.auth import GoogleAuth
+from pydrive.drive import GoogleDrive
 # import visual presentation aids
 from tabulate import tabulate
 # import spacy for sentiment analysis
@@ -18,11 +20,6 @@ from spacytextblob.spacytextblob import SpacyTextBlob  # noqa # pylint: disable=
 # import matplotlib and wordcloud to build word clouds
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
-# import cloudinary for image uploading
-import cloudinary
-from cloudinary.uploader import upload
-from cloudinary.utils import cloudinary_url
-from decouple import config
 
 
 SCOPE = [
@@ -36,19 +33,11 @@ CREDS = Credentials.from_service_account_file("creds.json")
 SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open("sentiment-analysis-data-set")
-CLOUDINARY_NAME = config('CLOUDINARY_URL')
-CLOUDINARY_KEY = config('CLOUDINARY_KEY')
-CLOUDINARY_SECRET = config('CLOUDINARY_SECRET')
-CLOUDINARY_URL = config('CLOUDINARY_URL')
+gauth = GoogleAuth()
+drive = GoogleDrive(gauth)
 nlp = spacy.load('en_core_web_sm')
 nlp.add_pipe('spacytextblob')
 
-cloudinary.config(
-  cloud_name = CLOUDINARY_NAME,
-  api_key = CLOUDINARY_KEY,
-  api_secret = CLOUDINARY_SECRET,
-  secure = 'true'
-)
 
 def fetch_headers():
     """
@@ -242,10 +231,13 @@ def build_word_cloud(string):
     wordcloud_name = '_'.join(["wordcloud", str(random_num)])
     wordcloud_path = f"assets/{wordcloud_name}.png"
     wordcloud.to_file(wordcloud_path)
-    upload(wordcloud_path)
-    url = cloudinary_url(f"wordcloud-{random_num}")
+    gfile = drive.CreateFile({'parents': [{'id':
+                             '1-cQa-pHMMvONbx9cra2l2aeWXntlce5N'}]})
+    gfile.SetContentFile(wordcloud_path)
+    gfile.Upload()
 
-    print(f"\nYour WordCloud is now available at {url}.\n")
+
+    print(f"\nYour WordCloud is now available in your Google Drive.\n")
 
     print("What do you want to do next?\n")
 
