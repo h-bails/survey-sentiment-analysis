@@ -145,7 +145,7 @@ def analyse_themes(string):
                 \n3: Analyse another data category\n\
                 \nYour choice:\n")
             if word_cloud_choice == "1":
-                append_data(word_freq, phrase_freq, sentiment_score)
+                append_data(word_freq, phrase_freq, sentiment_score, phrases)
                 break
             elif word_cloud_choice == "2":
                 print("OK! Building your Word Cloud...\n")
@@ -165,7 +165,7 @@ def analyse_themes(string):
             continue
 
 
-def append_data(words, phrases, sentiment):
+def append_data(freq1, freq2, sent, phrases):
     """
     Creates a new worksheet with a random name.
     Appends the most common words, phrases and sentiment score
@@ -177,8 +177,8 @@ def append_data(words, phrases, sentiment):
     worksheet_title = '_'.join(["worksheet", str(random_num)])
     worksheet = SHEET.add_worksheet(title=worksheet_title, rows=100, cols=20)
 
-    words_list = [list(row) for row in words]
-    phrases_list = [list(row) for row in phrases]
+    words_list = [list(row) for row in freq1]
+    phrases_list = [list(row) for row in freq2]
 
     worksheet.append_row(["Most common words:"], table_range='A1:B1')
     worksheet.append_rows(words_list, table_range='A1:B1')
@@ -187,7 +187,7 @@ def append_data(words, phrases, sentiment):
     worksheet.append_rows(phrases_list)
 
     worksheet.append_row(["Overall sentiment score:"], table_range='A25:B25')
-    worksheet.append_row([sentiment], table_range='A26:B26')
+    worksheet.append_row([sent], table_range='A26:B26')
     print(Fore.GREEN + '\nWorksheet updated.\n')
 
     print(Fore.CYAN + "What do you want to do next?\n")

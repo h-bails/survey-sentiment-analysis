@@ -1,31 +1,202 @@
-![CI logo](https://codeinstitute.s3.amazonaws.com/fullstack/ci_logo_small.png)
+# Survey Sentiment Analyzer 
 
-Welcome h-bails,
+The Survey Sentiment Analyzer is a Python script that analyses survey data for sentiment and provides visual representations of the analysed data. This script allows users to connect to their Google Sheet data, fetch a specific category of data, analyse it for sentiment, and choose to either add the analysed data to their Google Sheet or visualise the data in a word cloud.
 
-This is the Code Institute student template for deploying your third portfolio project, the Python command-line project. The last update to this file was: **August 17, 2021**
+It’s designed to use basic natural language processing (NLP) techniques to analyze open-text data, particularly from open-ended questions in surveys. The application connects to Google Drive and Sheets via API, and is designed to help the user interact and understand survey responses at a high level, as well as export the data and wordcloud to use in stakeholder reports or anywhere else they may want to visually present the data.
 
-## Reminders
+I created this app to solve a problem I personally face often at work when analyzing such data. I’ve spent hours poring over open text survey data, trying to decipher common themes by reading alone. Equally, I can’t paste the data into an external text analysis service or word cloud maker, as it’s considered sensitive company data.
 
-* Your code must be placed in the `run.py` file
-* Your dependencies must be placed in the `requirements.txt` file
-* Do not edit any of the other files or your code may not deploy properly
+This app (if deployed on an employer’s IT-approved platform, or run locally on the user’s machine) helps users circumvent such data confidentiality concerns, and save hours on trying to read and understand bodies of open text data. 
+## User Stories
 
-## Creating the Heroku app
+As a user, I want to be able to:
+- View categories of data available for analysis
+- Select a category/question I want to perform data analysis on
+- Glean insights into the responses, such as most common words and phrases
+- Get an idea as to the overall sentiment of the responses
+- Export the raw textual data into a Google Sheet
+- Export the most common phrases into a word cloud to visually represent the data
 
-When you create the app, you will need to add two buildpacks from the _Settings_ tab. The ordering is as follows:
+Additionally, any user of this application should find the menu system easy to navigate, and be able to exit the application or return to the main menu as they please.
 
-1. `heroku/python`
-2. `heroku/nodejs`
+## Flowchart
+![user journey flowchart](./static/sentiment%20analyzer%20user%20journey.png)
 
-You must then create a _Config Var_ called `PORT`. Set this to `8000`
+## Features
 
-If you have credentials, such as in the Love Sandwiches project, you must create another _Config Var_ called `CREDS` and paste the JSON into the value field.
+### The raw data
+Above is an example of an optimised Google Sheet layout for this project. **Note:** The program assumes that the open text data to be analyzed has been sorted into separate columns depending on the question/theme, and that descriptive headers have been added. It also looks for the worksheet named *data* to fetch the data, so make sure to name your worksheet accordingly.
 
-Connect your GitHub repository and deploy as normal.
+Currently, it is not within the scope of the program to analyze data that is not free text in nature (such as multiple choice or yes/no questions).
 
-## Constraints
+### Welcome message
+The welcome message is displayed when the user first logs into the program, as well as when they choose to return to the home screen to analyze another category of data. It briefly introduces the program and instructs them on how to exit the program.
 
-The deployment terminal is set to 80 columns by 24 rows. That means that each line of text needs to be 80 characters or less otherwise it will be wrapped onto a second line.
+### Data selection
+The available data is fetched from the Google Sheet, and is displayed according to the header title. Each category is allocated a number to help the user select the topic of their choice.
 
------
-Happy coding!
+### Preparing the data for analysis
+After the user selects a topic, the data is parsed and converted to one long string for analysis. 
+
+### Displaying data insights
+Using the spacy module, the most common words and phrases occurring in the body of data are displayed. In order to do this, the string is lemmatized (i.e. words are reduced to their base forms - e.g. 'likes' to 'like', 'change/changes/changing' to 'change'), and stop words are removed (such as 'is', 'to', 'and' etc.). This gives valuable insight as to what is on respondents' minds when answering a survey. 
+
+The textblob module also analyzes the original (unlemmatized) string and assigns it a sentiment score. Using the program's inbuilt logic, a message is displayed to the user as to whether the sentiment was positive, negative or neutral.
+
+### Adding data to the Google Sheet
+Should the user opt to do so, the data can be appended to their Google Sheet. A new worksheet is created with a random name, and the data is tabulated within it.
+
+### Building a Word Cloud
+Using the wordcloud module, the lemmatized string is translated into a WordCloud. The WordCloud is saved to the home directory using the wordcloud.to_file functionality, so that it can be converted into an image. If deployed locally on the user's machine, the wordcloud can be synced directly to either Google Drive or another cloud storage service. 
+**An important caveat applies to WordClouds when project is deployed in Heroku - see Enhancements section below.**
+
+### User prompts
+After each stage (Data insights shown; Data added to Google sheet; Wordcloud built) the user is shown a menu of prompts displaying the next steps available to them, as illustrated in the flow diagram above. They can also exit the program at any time by typing 'exit'. The user's responses are validated and error handling is built in at each prompt screen.
+
+
+
+
+
+## Future Implementations
+
+In its current state, this script has proved highly useful to me so far, and I daresay it could be for other users too - **if** used on their local machine. 
+
+However, for the purposes of this particular project, it was a requirement that the script be deployed to Heroku and interacted with in a front-end terminal. In its deployed state in Heroku, it should be considered a MVP, demonstrating what is possible with this script and these modules. 
+
+The reason for this: I faced significant barriers in handling the processing and storage of the WordCloud images when deploying this project to Heroku (as you'll be able to tell by the commit history :'))
+
+I was able to achieve the following working when running the program locally:
+- Syncing of the WordCloud to Google Drive via the terminal (demonstrated in [this public folder](https://drive.google.com/drive/u/0/folders/1-cQa-pHMMvONbx9cra2l2aeWXntlce5N))
+- Syncing of the WordCloud to Cloudinary via the terminal
+
+The Wordcloud module works as follows: It uses matplotlib to 'plot' the words, however it does not automatically generate the wordcloud as an image. As far as I could tell, the wordcloud needs to be saved to the home directory as an image (using the .to_file function) in order for a cloud service to then accept its upload via their API.
+
+However, Heroku uses an [ephemeral file system](https://devcenter.heroku.com/articles/dynos#ephemeral-filesystem) and is not designed for hosting or processing static images. So when attempting to fetch the image from the home directory, one is met with a 404 error.
+
+I did try using _pathlib_ and _os_ to generate a dynamic directory path from Heroku, but to no avail at time of publication.
+
+**In summary:** In an ideal world, this application would generate the worldcloud and upload it to a cloud service in real time. For the purposes of this project, I was not able to implement this. However, to work around this, and to demonstrate how the application *should* theoretically work and flow, I implemented the code to instead show a static, pre-uploaded set of wordclouds based on the example Google Sheet data in my project. This admittedly inelegant solution will obviously need to be altered if a user wants to deploy the project themselves!
+
+Overall, I think the WordCloud module would likely be better suited to a tool like Jupyter Notebook, or perhaps in a full-stack project using Django or Flask, allowing for a wider set of features than Python + terminal alone.
+
+### Other future enhancements
+
+I'd also like to implement the following in future releases of this program:
+- A trackable Net Promoter Score gleaned from the sentiment analysis that can be tracked over time
+- Ability to glean insights from other types of survey data (multiple choice, numerical, yes/no, etc)
+## Fixed bugs
+
+- Initially, Heroku was giving the following error message when compiling the program for deployment:
+```
+fatal error: longintrepr.h: No such file or directory
+```
+- This was an issue between the Wordcloud module and Python 3.11 (which Heroku uses by default), and was rectified by specifying an earlier version of Python (3.9) in the runtime.txt folder.
+- Linters Pylint and flake8 persistently flagged an error when importing Spacytextblob, stating the module wasn't used in the code, when it is in fact used in the 'analyze_themes' function (as _.blob). This was rectified by adding the following comments to the import line:
+```
+# noqa # pylint: disable=unused-import 
+```
+
+## Run Locally
+
+For the time being, I'm deliberately only include instructions to run this project locally, as I believe this will be most beneficial to potential users of this code. Future releases will incldue instructions on how to deploy using Heroku once the image hosting/processing issue is resolved.
+
+### Requirements
+To use this script, you'll need the following:
+
+- Python 3.6 - 3.10 (WordCloud doesn’t play nicely with 3.11 yet)
+- pip
+- A Google account
+- A Google Sheet containing the data you wish to process
+- A Google Cloud Platform (GCP) project with the Google Drive and Google Sheets APIs enabled
+- A GCP service account key file with the appropriate API permissions (see below)
+- The appropriate Python packages (see below)
+
+### Installation
+1. Clone the repository to your local machine:
+```
+git clone https://github.com/example/survey-sentiment-analyzer.git
+```
+2. Install the required packages:
+```
+pip install -r requirements.txt
+```
+### Configuring the script
+Before you can run the script on your local machine, you'll need to configure it to use your own Google Sheet and API credentials.
+
+1. Identify the Google sheet which contains the data. The worksheet name should be *data*, and the relevant open text data should: (a) be sorted into separate columns depending on the question/theme, (b) have descriptive headers added to the top row for each different topic. See screenshot in the 'Raw data' section above for reference.
+
+2. Go to the [GCP Console](https://console.cloud.google.com/), and create a new project.
+
+3. Enable the Google Drive and Google Sheets APIs for your project.
+
+4. Create a new service account for your project and download the service account key file as a JSON.
+
+5. Grant the service account _Editor_ access on the Google Sheet and Drive APIs.
+
+6. Add the downloaded service account key file to the root directory of the cloned repository, and rename it to "creds.json". 
+
+7. Open "run.py" with your editor of choice, and replace the SHEET_NAME variable with the name of the Google Sheet you created in step 1.
+
+8. Remove this snippet of code from run.py (lines 235 - 244):
+```
+short_path = 'https://res.cloudinary.com/hwvf6ormz/image/upload/'
+
+    if header_choice == "1":
+        wordcloud_url = short_path + "v1676571064/wordcloud_7289_y9dtvm.png"
+    elif header_choice == "2":
+        wordcloud_url = short_path + "v1676571249/wordcloud_7156_hukmw2.png"
+    elif header_choice == "3":
+        wordcloud_url = short_path + "v1676571304/wordcloud_4527_pux62s.png"
+    elif header_choice == "4":
+        wordcloud_url = short_path + "v1676571438/wordcloud_4473_f9nfuw.png"
+    elif header_choice == "5":
+        wordcloud_url = short_path + "v1676571487/wordcloud_6742_b0jpg4.png"
+```
+Also remove this snippet from line 247:
+```
+    print(f"\nYou can also view it here: {wordcloud_url}\n")
+```
+
+8. Save and close the "run.py" file.
+
+### Running the script
+To run the script, navigate to the root directory of the cloned repository in your terminal or CLI and enter the following command:
+```
+python survey_sentiment_analyzer.py
+```
+Follow the prompts in the terminal as described in the flowchart and Features section above.
+
+Note: If you so desire, you can check out [this article](https://www.projectpro.io/recipes/upload-files-to-google-drive-using-python) on how to edit the code so the Wordclouds can be synced to your own Google Drive.
+
+
+
+## Testing
+
+
+
+## Demo
+
+Insert gif or link to demo
+
+
+## Credits
+
+### Resources and tutorials
+ - Dummy dataset by [Chandler Nunez on data.world](https://data.world/chanalytics/female-empowerment-survey-data)
+ - Tutorials on using Spacy for text analysis: [Roberto Rocha](http://robertorocha.info/using-nlp-to-analyze-open-ended-responses-in-surveys/) & [Programming Historian](https://programminghistorian.org/en/lessons/sentiment-analysis)
+ - Making WordClouds in Python: [Towards Data Science](https://towardsdatascience.com/how-to-make-word-clouds-in-python-that-dont-suck-86518cdcb61f)
+ - Even though I didn't end up using the functionality in the deployed version, I found [this tutorial](https://www.projectpro.io/recipes/upload-files-to-google-drive-using-python) helpful in learning how to upload wordclouds to Google Drive.
+
+### Python libraries and modules used
+
+- _collections_ - to use Counter to count common words and phrases
+- _random_ - to generate random names for the wordcloud files and google sheet worksheets
+- _sys_ - to exit the program
+- _gspread_ - to interact with the Google sheet
+- _oauth2_ - to interact with Google Drive
+- _tabulate_ - to display data in a table format in the terminal
+- _spacy_ - to pull out common words and phrases
+- _spacy.matcher_ - to find words/phrases matching a given definition
+- _spacytextblob_ - to perform sentiment analysis
+- _matplotlib_ - to plot the word cloud
+- _wordcloud_ - to generate the word cloud
