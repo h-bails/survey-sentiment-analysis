@@ -1,5 +1,5 @@
 """
-Survey Sentiment Analyzer imports
+Survey Sentiment Analyser imports
 """
 # import in-built Python modules
 from collections import Counter
@@ -10,6 +10,8 @@ import gspread
 from google.oauth2.service_account import Credentials
 # import visual presentation aids
 from tabulate import tabulate
+import colorama
+from colorama import Fore
 # import spacy for sentiment analysis
 import spacy
 from spacy.matcher import Matcher
@@ -54,7 +56,6 @@ def fetch_headers():
 
     while True:
         try:
-            global header_choice
             header_choice = input("Enter your choice here:\n")
             if header_choice in header_num_string:
                 break
@@ -65,10 +66,10 @@ def fetch_headers():
             else:
                 raise ValueError("Invalid selection")
         except ValueError as error:
-            print(f"{error}: Number not in list. Please try again.")
+            print(Fore.RED + f"{error}: Number not in list. Please try again.")
             continue
 
-    print("Great! Let's analyse your data!\n")
+    print(Fore.GREEN + "Great! Let's analyse your data!\n")
     return header_choice
 
 
@@ -123,23 +124,25 @@ def analyse_themes(string):
     print(sentiment_score)
 
     if sentiment_score <= 1 and sentiment_score >= 0.6:
-        print("\nSentiment of responses was *Very Positive*.\n")
+        print("\nSentiment of responses was" + Fore.GREEN +
+              "*Very Positive*.\n")
     elif sentiment_score < 0.6 and sentiment_score > 0.1:
-        print("\nSentiment of responses was *Positive*.\n")
+        print("\nSentiment of responses was" + Fore.GREEN + " *Positive*.\n")
     elif sentiment_score <= 0.1 and sentiment_score >= -0.1:
-        print("\nSentiment of responses was *Neutral*.\n")
+        print("\nSentiment of responses was" + Fore.YELLOW + " *Neutral*.\n")
     elif sentiment_score > -0.6 and sentiment_score < -0.1:
-        print("\nSentiment of responses was *Negative*.\n")
+        print("\nSentiment of responses was" + Fore.RED + " *Negative*.\n")
     elif sentiment_score >= -1 and sentiment_score <= 0.6:
-        print("\nSentiment of responses was *Very Negative*.\n")
+        print("\nSentiment of responses was" + Fore.RED +
+              " *Very Negative*.\n")
 
-    print("What do you want to do next?\n")
+    print(Fore.CYAN + "What do you want to do next?\n")
 
     while True:
         try:
             word_cloud_choice = input("1: Add this data to my Google Sheet\
                 \n2: Build a Word Cloud using this data\
-                \n3: Analyze another data category\n\
+                \n3: Analyse another data category\n\
                 \nYour choice:\n")
             if word_cloud_choice == "1":
                 append_data(word_freq, phrase_freq, sentiment_score)
@@ -157,8 +160,8 @@ def analyse_themes(string):
             else:
                 raise ValueError("Invalid selection")
         except ValueError as error:
-            print(f"{error}: Available options are 1 or 2, 3, or \'exit\'.\
-                \nPlease try again.")
+            print(Fore.RED + f"{error}: Available options are 1 or 2, 3,"
+                  + " or \'exit\'. Please try again.")
             continue
 
 
@@ -185,15 +188,15 @@ def append_data(words, phrases, sentiment):
 
     worksheet.append_row(["Overall sentiment score:"], table_range='A25:B25')
     worksheet.append_row([sentiment], table_range='A26:B26')
-    print('\nWorksheet updated.\n')
+    print(Fore.GREEN + '\nWorksheet updated.\n')
 
-    print("What do you want to do next?\n")
+    print(Fore.CYAN + "What do you want to do next?\n")
 
     while True:
         try:
             step_choice = input("1: Download a Word Cloud from this data\
-                \n2: Analyze another data category\n\
-                \nexit: Exit the program\
+                \n2: Analyse another data category\
+                \nexit: Exit the program\n\
                 \nYour choice:\n")
             if step_choice == "1":
                 print("OK! Fetching your Word Cloud...\n")
@@ -208,8 +211,8 @@ def append_data(words, phrases, sentiment):
             else:
                 raise ValueError("Invalid selection")
         except ValueError as error:
-            print(f"{error}: Available options are 1, 2, or \'exit\'.\
-                \nPlease try again.")
+            print(Fore.RED + f"{error}: Available options are 1, 2, or"
+                  + " \'exit\'. Please try again.")
             continue
 
 
@@ -243,14 +246,14 @@ def build_word_cloud(string):
     elif header_choice == "5":
         wordcloud_url = short_path + "v1676571487/wordcloud_6742_b0jpg4.png"
 
-    print("\nWordcloud saved to the home directory.\n")
+    print(Fore.GREEN + "\nWordcloud saved to the home directory.\n")
     print(f"\nYou can also view it here: {wordcloud_url}\n")
 
-    print("What do you want to do next?\n")
+    print(Fore.CYAN + "What do you want to do next?\n")
 
     while True:
         try:
-            step_choice = input("1: Analyze another data category\
+            step_choice = input("1: Analyse another data category\
                 \nexit: Exit the program\n\
                 \nYour choice:\n")
             if step_choice == "1":
@@ -262,16 +265,18 @@ def build_word_cloud(string):
             else:
                 raise ValueError("Invalid selection")
         except ValueError as error:
-            print(f"{error}: Available options are 1, or \'exit\'.\
-                \nPlease try again.")
+            print(Fore.RED + f"{error}: Available options are 1, or \'exit\'."
+                  + " Please try again.")
             continue
 
 
 def main():
     """
-    Run all program functions
+    Run all program functionspytoh
     """
+    colorama.init(autoreset=True)
     start()
+    global header_choice
     header_choice = fetch_headers()
     data_string = get_selected_data(header_choice)
     analyse_themes(data_string)
@@ -281,12 +286,12 @@ def start():
     """
     Prints the introduction to the program
     """
-    print("Welcome to the Survey Sentiment Analyser!\n")
+    print(Fore.MAGENTA + "Welcome to the Survey Sentiment Analyser!\n")
     print("This program can help you perform sentiment analysis on")
     print("open-text survey responses in a Google Sheet.\n")
     print("Type \'exit\' at any time to terminate the program.\n")
 
-    input("Press \'Enter\' to begin the data analysis.\n")
+    input(Fore.CYAN + "Press \'Enter\' to begin the data analysis.\n")
 
     print("Fetching available data categories...\n")
 
