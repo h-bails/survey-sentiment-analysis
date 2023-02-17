@@ -20,37 +20,61 @@ As a user, I want to be able to:
 Additionally, any user of this application should find the menu system easy to navigate, and be able to exit the application or return to the main menu as they please.
 
 ## Flowchart
-![user journey flowchart](./static/sentiment%20analyzer%20user%20journey.png)
+![user journey flowchart](./static/screenshots/sentiment%20analyzer%20user%20journey.png)
 
 ## Features
 
 ### The raw data
+![google sheet data](./static/screenshots/full-worksheet.png)
+
 Above is an example of an optimised Google Sheet layout for this project. **Note:** The program assumes that the open text data to be analyzed has been sorted into separate columns depending on the question/theme, and that descriptive headers have been added. It also looks for the worksheet named *data* to fetch the data, so make sure to name your worksheet accordingly.
 
 Currently, it is not within the scope of the program to analyze data that is not free text in nature (such as multiple choice or yes/no questions).
 
 ### Welcome message
+![welcome message](./static/screenshots/welcome-message.png)
+
 The welcome message is displayed when the user first logs into the program, as well as when they choose to return to the home screen to analyze another category of data. It briefly introduces the program and instructs them on how to exit the program.
 
 ### Data selection
+![fetching data](./static/screenshots/data-categories.png)
+
 The available data is fetched from the Google Sheet, and is displayed according to the header title. Each category is allocated a number to help the user select the topic of their choice.
 
 ### Preparing the data for analysis
+![preparing data](./static/screenshots/preparing-data.png)
+
 After the user selects a topic, the data is parsed and converted to one long string for analysis. 
 
 ### Displaying data insights
+![displaying data](./static/screenshots/common-words-sentiment-score.png)
+
+![displaying data](./static/screenshots/common-phrases.png)
+
 Using the spacy module, the most common words and phrases occurring in the body of data are displayed. In order to do this, the string is lemmatized (i.e. words are reduced to their base forms - e.g. 'likes' to 'like', 'change/changes/changing' to 'change'), and stop words are removed (such as 'is', 'to', 'and' etc.). This gives valuable insight as to what is on respondents' minds when answering a survey. 
 
 The textblob module also analyzes the original (unlemmatized) string and assigns it a sentiment score. Using the program's inbuilt logic, a message is displayed to the user as to whether the sentiment was positive, negative or neutral.
 
 ### Adding data to the Google Sheet
+![displaying data](./static/screenshots/appended-data.png)
+
 Should the user opt to do so, the data can be appended to their Google Sheet. A new worksheet is created with a random name, and the data is tabulated within it.
 
 ### Building a Word Cloud
+![displaying wordcloud](./static/screenshots/display-wordcloud.png)
+
 Using the wordcloud module, the lemmatized string is translated into a WordCloud. The WordCloud is saved to the home directory using the wordcloud.to_file functionality, so that it can be converted into an image. If deployed locally on the user's machine, the wordcloud can be synced directly to either Google Drive or another cloud storage service. 
 **An important caveat applies to WordClouds when project is deployed in Heroku - see Enhancements section below.**
 
+![displaying wordcloud](./static/screenshots/wordcloud_9116.png)
+
 ### User prompts
+![displaying data](./static/screenshots/user-input-next.png)
+
+![displaying data](./static/screenshots/user-input-next-2.png)
+
+![displaying data](./static/screenshots/user-input-3.png)
+
 After each stage (Data insights shown; Data added to Google sheet; Wordcloud built) the user is shown a menu of prompts displaying the next steps available to them, as illustrated in the flow diagram above. They can also exit the program at any time by typing 'exit'. The user's responses are validated and error handling is built in at each prompt screen.
 
 
@@ -200,3 +224,6 @@ Insert gif or link to demo
 - _spacytextblob_ - to perform sentiment analysis
 - _matplotlib_ - to plot the word cloud
 - _wordcloud_ - to generate the word cloud
+
+## About
+This project was written by Holly Bailey - [link to GitHub.](https://github.com/h-bails)

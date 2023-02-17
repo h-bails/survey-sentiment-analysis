@@ -272,7 +272,7 @@ def build_word_cloud(string):
 
 def main():
     """
-    Run all program functionspytoh
+    Run all program functions
     """
     colorama.init(autoreset=True)
     start()
