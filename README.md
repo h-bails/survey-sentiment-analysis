@@ -8,6 +8,9 @@ I created this app to solve a problem I personally face often at work when analy
 
 This app (if deployed on an employer’s IT-approved platform, or run locally on the user’s machine) helps users circumvent such data confidentiality concerns, and save hours on trying to read and understand bodies of open text data. 
 
+Currently, the app is linked to a spreadsheet containing publically available data: [Female Empowerment Survey Data by Chandler Nunez on data.world](https://data.world/chanalytics/female-empowerment-survey-data). However, it can be edited to analyse any open-text survey data the user would like to.
+
+
 [Link to live app](https://survey-sentiment-analysis.herokuapp.com/)
 
 [Link to GitHub repo](https://github.com/h-bails/survey-sentiment-analysis)
