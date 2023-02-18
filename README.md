@@ -216,11 +216,11 @@ Note: If you so desire, you can check out [this article](https://www.projectpro.
 |-----------------------------------------------------------------|-----------------------------------------------------------------|-----------------------------------------------------------------|----------------|
 | Welcome Message displays on initial load. | Launch and/or reload live application. | Application should print the relevant welcome message upon initial load. | Pass |
 | Any input screens should only accept valid inputs. | Try a range of valid and invalid inputs at all multiple choice inputs. Invalid inputs include a space, special characters, strings/integers not in list of options. | Program should only accept a string that corresponds to available options. | Pass |
-| Valid inputs should select correct option. | Enter valid inputs at various multiple choice inputs. | Application should use selected information correctly (If input is '1', the application should use/run the option listed as '1'). | Pass |
+| Valid inputs should display the correct option. | Enter valid inputs at various decision points. | Application should use the entered information correctly (e.g. if user inputs "2", the application should run the option listed as "2"). | Pass |
 | Functionality to analyze the survey data should work correctly. | Select a topic for data analysis. | Program should process the data and return the most common words, phrases, and a sentiment score. | Pass |
 | Functionality to add analyzed data to a Google Sheet should work correctly. | Select 'Add this data to my Google Sheet.' | Program should append the analyzed data to the Google Sheet in a new worksheet, with a randomly generated name. | Pass |
-| Functionality to build a Wordcloud should work correctly. | Attempt to use the 'Remove an item from the menu' service. | WordCloud should be generated and saved to the home directory under a randomly generated name. URL to a downloadable WordCloud should be displayed to the user. | Pass, with conditions (see 'Future Enhancements') |
-| User should be able to exit the program. | Attempt to exit the program at any user decision point. | Program should terminate. | Pass |
+| Functionality to build a Wordcloud should work correctly. | Attempt to use the 'Build a WordCloud' functionality. | WordCloud should be generated and saved to the home directory under a randomly generated name. URL to a downloadable WordCloud should be displayed to the user. | Pass, with conditions (see 'Future Enhancements') |
+| User should be able to exit the program. | Attempt to exit the program at user decision points. | Program should terminate. | Pass |
 | User should be able to navigate to the home screen to analyze a new data category. | Attempt to use the 'Analyze another data category' menu option. | Program should display the welcome message and prompt the user to begin data analysis. | Pass |
 
 
@@ -263,6 +263,7 @@ Here are screenshots from input validation testing:
  - Tutorials on using Spacy for text analysis: [Roberto Rocha](http://robertorocha.info/using-nlp-to-analyze-open-ended-responses-in-surveys/) & [Programming Historian](https://programminghistorian.org/en/lessons/sentiment-analysis)
  - Making WordClouds in Python: [Towards Data Science](https://towardsdatascience.com/how-to-make-word-clouds-in-python-that-dont-suck-86518cdcb61f)
  - Even though I didn't end up using the functionality in the deployed version, I found [this tutorial](https://www.projectpro.io/recipes/upload-files-to-google-drive-using-python) helpful in learning how to upload wordclouds to Google Drive.
+ - I also want to shout out to [Shabucky1812](https://github.com/Shabucky1812/DottiesDivineDoughnuts/blob/main/testing.md) for inspo on how to lay out a testing section that is actually visually pleasing.
 
 ### Python libraries and modules used
 
