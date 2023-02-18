@@ -134,6 +134,7 @@ fatal error: longintrepr.h: No such file or directory
 ```
 # noqa # pylint: disable=unused-import 
 ```
+- I experienced an issue where the wordcloud couldn't be built after the data was appending to the Google Sheet. This is because I was accidentally passing a tuple as a parameter to the build_word_cloud() function instead of a string. This was patched.
 
 ## Run Locally
 
