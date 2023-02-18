@@ -7,6 +7,14 @@ It’s designed to use basic natural language processing (NLP) techniques to ana
 I created this app to solve a problem I personally face often at work when analyzing such data. I’ve spent hours poring over open text survey data, trying to decipher common themes by reading alone. Equally, I can’t paste the data into an external text analysis service or word cloud maker, as it’s considered sensitive company data.
 
 This app (if deployed on an employer’s IT-approved platform, or run locally on the user’s machine) helps users circumvent such data confidentiality concerns, and save hours on trying to read and understand bodies of open text data. 
+
+[Link to live app](https://survey-sentiment-analysis.herokuapp.com/)
+
+[Link to GitHub repo](https://github.com/h-bails/survey-sentiment-analysis)
+
+[Link to Google sheet](https://docs.google.com/spreadsheets/d/1wTOMLC8k9bOKSgUdTgufXm1g1W1R7Ayw7DaTJpv5dys/edit#gid=0)
+
+
 ## User Stories
 
 As a user, I want to be able to:
@@ -63,7 +71,7 @@ Should the user opt to do so, the data can be appended to their Google Sheet. A 
 ### Building a Word Cloud
 ![displaying wordcloud](./static/screenshots/display-wordcloud.png)
 
-Using the wordcloud module, the lemmatized string is translated into a WordCloud. The WordCloud is saved to the home directory using the wordcloud.to_file functionality, so that it can be converted into an image. If deployed locally on the user's machine, the wordcloud can be synced directly to either Google Drive or another cloud storage service. 
+Using the wordcloud module, the lemmatized string is translated into a WordCloud. The WordCloud is saved to the /'static/' folder in the home directory using the wordcloud.to_file functionality, so that it can be converted into an image. If deployed locally on the user's machine, the wordcloud can be synced directly to either Google Drive or another cloud storage service. 
 **An important caveat applies to WordClouds when project is deployed in Heroku - see Enhancements section below.**
 
 ![displaying wordcloud](./static/screenshots/wordcloud_9116.png)
@@ -76,8 +84,6 @@ Using the wordcloud module, the lemmatized string is translated into a WordCloud
 ![displaying data](./static/screenshots/user-input-3.png)
 
 After each stage (Data insights shown; Data added to Google sheet; Wordcloud built) the user is shown a menu of prompts displaying the next steps available to them, as illustrated in the flow diagram above. They can also exit the program at any time by typing 'exit'. The user's responses are validated and error handling is built in at each prompt screen.
-
-
 
 
 
@@ -108,6 +114,15 @@ Overall, I think the WordCloud module would likely be better suited to a tool li
 I'd also like to implement the following in future releases of this program:
 - A trackable Net Promoter Score gleaned from the sentiment analysis that can be tracked over time
 - Ability to glean insights from other types of survey data (multiple choice, numerical, yes/no, etc)
+- When selecting 'Analyse another data category', it would probably be preferable for the user to navigate back to the list of headers rather than relaunching the whole program. This will be updated in a future release.
+
+## Demo
+
+Here is a short demo of the app and its functionality:
+
+![full demo](./static/screenshots/testing/demo-recording.gif)
+
+
 ## Fixed bugs
 
 - Initially, Heroku was giving the following error message when compiling the program for deployment:
@@ -193,14 +208,52 @@ Follow the prompts in the terminal as described in the flowchart and Features se
 Note: If you so desire, you can check out [this article](https://www.projectpro.io/recipes/upload-files-to-google-drive-using-python) on how to edit the code so the Wordclouds can be synced to your own Google Drive.
 
 
-
 ## Testing
 
+### Functionality testing
+
+| Description | Action | Expected outcome | Actual outcome |
+|-----------------------------------------------------------------|-----------------------------------------------------------------|-----------------------------------------------------------------|----------------|
+| Welcome Message displays on initial load. | Launch and/or reload live application. | Application should print the relevant welcome message upon initial load. | Pass |
+| Any input screens should only accept valid inputs. | Try a range of valid and invalid inputs at all multiple choice inputs. Invalid inputs include a space, special characters, strings/integers not in list of options. | Program should only accept a string that corresponds to available options. | Pass |
+| Valid inputs should select correct option. | Enter valid inputs at various multiple choice inputs. | Application should use selected information correctly (If input is '1', the application should use/run the option listed as '1'). | Pass |
+| Functionality to analyze the survey data should work correctly. | Select a topic for data analysis. | Program should process the data and return the most common words, phrases, and a sentiment score. | Pass |
+| Functionality to add analyzed data to a Google Sheet should work correctly. | Select 'Add this data to my Google Sheet.' | Program should append the analyzed data to the Google Sheet in a new worksheet, with a randomly generated name. | Pass |
+| Functionality to build a Wordcloud should work correctly. | Attempt to use the 'Remove an item from the menu' service. | WordCloud should be generated and saved to the home directory under a randomly generated name. URL to a downloadable WordCloud should be displayed to the user. | Pass, with conditions (see 'Future Enhancements') |
+| User should be able to exit the program. | Attempt to exit the program at any user decision point. | Program should terminate. | Pass |
+| User should be able to navigate to the home screen to analyze a new data category. | Attempt to use the 'Analyze another data category' menu option. | Program should display the welcome message and prompt the user to begin data analysis. | Pass |
 
 
-## Demo
+### Notes
+- I passed the code through Pylint, flake8 and the CI linter on Heroku. Errors and warnings were fixed as they appeared such as unussed imports, indentation errors, line length errors, or whitespace errors.
 
-Insert gif or link to demo
+- After deployment, the features were tested on Chrome, Firefox and Safari. The app worked as expected on Chrome and Firefox. _Functionality is currently not supported on Safari_ - user inputs are not accepted at all when using the Safari browser. I tried loading some other example Code Institute projects in Safari and experienced the same - so I suspect this is down to a compatibility issue with the mock terminal interface.
+
+- Error handling was added to all inputs. Every input screen was tested using letters, numbers, special characters, and unpredictable inputs to ensure the input validation worked correctly.
+
+- Note: The 'Welcome' screen will accept any input before the enter key is pressed, but makes no use of any additional input - only the Enter key is required to launch the program.
+
+- WordCloud creation: This cannot be tested in Heroku itself, but wordclouds were successfully created in the home directory. I've pushed a few to the *static* folder to demonstrate this. 
+
+- Appending data to Google Sheets: You can see via [this Google sheet](https://docs.google.com/spreadsheets/d/1wTOMLC8k9bOKSgUdTgufXm1g1W1R7Ayw7DaTJpv5dys/edit#gid=136824285) that this functionality works as expected.
+
+### Testing demos and screenshots:
+
+Here is a short demo as to how input validation and Google Sheets sync was tested on Heroku:
+
+![input validation testing](./static/screenshots/testing/testing-demo.gif)
+
+Here is a short demo as to how the WordCloud functionality was tested in Visual Studio:
+
+![wordcloud testing](./static/screenshots/testing/wordcloud-testing-demo.gif)
+
+Here are screenshots from input validation testing:
+
+![input validation testing](./static/screenshots/testing/input-validation-1.png)
+
+![input validation testing](./static/screenshots/testing/input-validation-2.png)
+
+![input validation testing](./static/screenshots/testing/input-validation-3.png)
 
 
 ## Credits
